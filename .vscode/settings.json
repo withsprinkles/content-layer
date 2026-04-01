@@ -1,0 +1,35 @@
+{
+    "js/ts.preferences.importModuleSpecifierEnding": "js",
+    "js/ts.experimental.useTsgo": true,
+
+    "oxc.enable.oxlint": true,
+    "oxc.enable.oxfmt": true,
+
+    "editor.defaultFormatter": "oxc.oxc-vscode",
+    "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.oxc": "always"
+    },
+
+    "[typescript]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "oxc.oxc-vscode"
+    },
+
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "package.json": ".github*, .npmrc, .vscode*, .node-version,.oxfmtrc.jsonc, .oxlintrc.jsonc, pnpm-*.yaml, tsconfig.*, workspace.json",
+        "readme*": "agent*, authors, backers*, changelog*, citation*, claude*, code_of_conduct*, codeowners, contributing*, contributors, copying, credits, governance.md, history.md, license*, maintainers, readme*, security.md, sponsors*",
+        "vite.config.*": "*.plugin.ts"
+    }
+}
