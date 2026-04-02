@@ -18,15 +18,36 @@
     "type": "module",
     "types": "./dist/index.d.mts",
     "exports": {
-        ".": "./dist/index.mjs",
-        "./react": "./dist/react.mjs",
-        "./remix": "./dist/remix.mjs",
-        "./loaders": "./dist/loaders.mjs"
+        ".": {
+            "types": "./dist/index.d.mts",
+            "import": "./dist/index.mjs"
+        },
+        "./react": {
+            "types": "./dist/react.d.mts",
+            "import": "./dist/react.mjs"
+        },
+        "./remix": {
+            "types": "./dist/remix.d.mts",
+            "import": "./dist/remix.mjs"
+        },
+        "./loaders": {
+            "types": "./dist/loaders.d.mts",
+            "import": "./dist/loaders.mjs"
+        },
+        "./internal/runtime": {
+            "types": "./dist/runtime.d.mts",
+            "import": "./dist/runtime.mjs"
+        },
+        "./internal/store": {
+            "types": "./dist/store.d.mts",
+            "import": "./dist/store.mjs"
+        }
     },
     "scripts": {
         "prepublishOnly": "vp run build"
     },
     "dependencies": {
+        "@standard-schema/spec": "^1.0.0",
         "@std/jsonc": "jsr:^1.0.2",
         "@std/yaml": "jsr:^1.0.12",
         "github-slugger": "^2.0.0",
@@ -38,6 +59,9 @@
         "vite": "npm:@voidzero-dev/vite-plus-core@latest",
         "vite-plus": "latest",
         "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+    },
+    "peerDependencies": {
+        "vite": "*"
     },
     "packageManager": "pnpm@10.33.0",
     "pnpm": {
