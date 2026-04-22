@@ -1,0 +1,11 @@
+.DS_Store
+.env
+/node_modules/
+
+# TanStack Start
+/.tanstack/
+/dist/
+/src/routeTree.gen.ts
+
+# Content Layer
+/.sprinkles/

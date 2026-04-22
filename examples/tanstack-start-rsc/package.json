@@ -1,0 +1,33 @@
+{
+    "name": "@withsprinkles/example-tanstack-start-rsc",
+    "private": true,
+    "type": "module",
+    "imports": {
+        "#/*": "./src/*"
+    },
+    "scripts": {
+        "dev": "vite dev",
+        "build": "vite build",
+        "start": "vite preview",
+        "typecheck": "tsgo --noEmit"
+    },
+    "dependencies": {
+        "@mdx-js/rollup": "^3.1.1",
+        "@remix-run/data-schema": "^0.2.0",
+        "@tanstack/react-router": "^1.114.0",
+        "@tanstack/react-start": "^1.114.0",
+        "@withsprinkles/content-layer": "workspace:*",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.2.2",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "@typescript/native-preview": "latest",
+        "@vitejs/plugin-react": "^5.0.0",
+        "@vitejs/plugin-rsc": "^0.5.21",
+        "tailwindcss": "^4.2.2",
+        "vite": "^8.0.3"
+    }
+}
