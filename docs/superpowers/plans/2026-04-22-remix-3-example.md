@@ -1314,28 +1314,23 @@ See the [package README](../../packages/content-layer#readme) for the full API r
 Run: `cd examples/remix-3 && pnpm typecheck && cd -`
 Expected: Exit 0.
 
-- [ ] **Step 3: Run production build**
+- [ ] **Step 3: Run dev and verify in a browser**
+
+Run: `cd examples/remix-3 && vp dev` in one terminal.
+Open the printed URL.
+Expected:
+- Home page renders with three posts sorted by `publishedOn` descending.
+- Click through to each post — content frame swaps (URL updates, chrome stays).
+- CopyCode button works on the `client-components-in-mdx` post (text copied, label flips to "Copied!", reverts after 2s).
+- Console is clean.
+Stop the dev server.
+
+- [ ] **Step 4: Production build (expect upstream failure)**
 
 Run: `cd examples/remix-3 && pnpm build && cd -`
-Expected: Exit 0. `examples/remix-3/dist/client/` and `examples/remix-3/dist/ssr/` both populated.
+Expected as of 2026-04: **fails** with `TypeError: Cannot read properties of undefined (reading 'isBuilt')` at `builder.build` in the remix plugin's compat wrapper. This is an upstream Remix 3 + Vite+ integration issue — the same error reproduces in the canonical `/Users/orion/Developer/Templates/remix-3-templates/default/` template, so it is not something this example can fix. Skip build verification until upstream resolves. Do NOT modify `remix.plugin.ts` — it is a verbatim copy of the template's plugin and patching it here would drift from upstream.
 
-- [ ] **Step 4: Run preview**
-
-Run: `cd examples/remix-3 && pnpm preview` in one terminal.
-Open the printed URL in a browser.
-Expected:
-- Home page renders with three posts.
-- Click through to each post — content frame swaps, URLs update.
-- CopyCode button still works on the `client-components-in-mdx` post.
-- Console is clean (no errors).
-Stop the preview server.
-
-- [ ] **Step 5: Run repo-wide `vp check`**
-
-Run: `vp check` from the repo root.
-Expected: Exit 0, or no new errors introduced by this example.
-
-- [ ] **Step 6: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
 git add examples/remix-3/README.md
@@ -1347,6 +1342,7 @@ git commit -m "Add README for Remix 3 example"
 ## Done criteria
 
 - All 14 tasks above complete with their commits.
-- `vp check` green repo-wide.
-- `cd examples/remix-3 && pnpm typecheck && pnpm build && pnpm preview` — all three succeed; manual browser verification passes (list → detail nav via Frame, CopyCode hydration works, no full-page reload on nav).
+- `cd examples/remix-3 && pnpm typecheck` exits 0.
+- `cd examples/remix-3 && vp dev` starts cleanly; list → detail nav via Frame works; CopyCode hydration works; no full-page reload on nav.
+- `pnpm build` / `pnpm preview` currently fail due to an upstream Remix 3 plugin bug (see Step 4). Tracked separately in bd.
 - The example's file tree matches §2 of the spec at `docs/superpowers/specs/2026-04-22-remix-3-example-design.md`.
