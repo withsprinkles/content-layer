@@ -1,0 +1,14 @@
+---
+title: Client components inside server-rendered MDX
+summary: MDX served through Content Layer compiles to server components — but nothing stops you from dropping a client-hydrated island right into the middle of it.
+publishedOn: 2026-04-01
+author: jane
+---
+
+The `CopyCode` island below is wrapped in `clientEntry()`. It runs in the
+browser, manages its own state via Remix 3's closure-plus-`handle.update()`
+pattern, and talks to the clipboard API. It's inlined directly into this MDX
+file — which itself is rendered on the server.
+
+That's the whole story: server-rendered content, interactive islands, one
+mental model.
