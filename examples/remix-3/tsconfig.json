@@ -1,16 +1,22 @@
 {
+    "include": ["**/*.ts", "**/*.tsx", "./.sprinkles/content-layer/**/*"],
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "ESNext",
-        "moduleResolution": "bundler",
-        "jsx": "react-jsx",
-        "jsxImportSource": "remix/component",
-        "noEmit": true,
         "allowImportingTsExtensions": true,
         "strict": true,
-        "esModuleInterop": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "skipLibCheck": true,
-        "types": ["@types/node", "vite/client", "@hiogawa/vite-plugin-fullstack/types"]
+        "verbatimModuleSyntax": true,
+        "noEmit": true,
+        "moduleResolution": "Bundler",
+        "module": "ESNext",
+        "target": "ESNext",
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "types": ["@types/node", "vite/client", "@hiogawa/vite-plugin-fullstack/types"],
+        "jsx": "react-jsx",
+        "jsxImportSource": "remix/component"
     },
-    "include": ["app", ".sprinkles/content-layer/**/*"]
+    "mdx": {
+        "checkMdx": true
+    }
 }
