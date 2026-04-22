@@ -57,41 +57,46 @@ Create the bare package so pnpm recognizes it as a workspace member.
         "oxc-parser": "^0.121.0",
         "vite": "npm:@voidzero-dev/vite-plus-core@latest",
         "vite-plus": "latest"
-    },
-    "packageManager": "pnpm@10.33.0",
-    "pnpm": {
-        "overrides": {
-            "vite": "npm:@voidzero-dev/vite-plus-core@latest"
-        },
-        "onlyBuiltDependencies": ["remix"]
     }
 }
 ```
+
+Note: no `packageManager` / `pnpm` fields here — `pnpm.overrides` is already at the workspace root, and `remix` has no install scripts so `onlyBuiltDependencies` is unnecessary.
 
 - [ ] **Step 2: Create `examples/remix-3/tsconfig.json`**
 
 ```json
 {
+    "include": ["**/*.ts", "**/*.tsx", "./.sprinkles/content-layer/**/*"],
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "ESNext",
-        "moduleResolution": "bundler",
-        "jsx": "react-jsx",
-        "jsxImportSource": "remix/component",
-        "noEmit": true,
         "allowImportingTsExtensions": true,
         "strict": true,
-        "esModuleInterop": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "skipLibCheck": true,
-        "types": ["@types/node", "vite/client", "@hiogawa/vite-plugin-fullstack/types"]
+        "verbatimModuleSyntax": true,
+        "noEmit": true,
+        "moduleResolution": "Bundler",
+        "module": "ESNext",
+        "target": "ESNext",
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "types": ["@types/node", "vite/client", "@hiogawa/vite-plugin-fullstack/types"],
+        "jsx": "react-jsx",
+        "jsxImportSource": "remix/component"
     },
-    "include": ["app", ".sprinkles/content-layer/**/*"]
+    "mdx": {
+        "checkMdx": true
+    }
 }
 ```
+
+This matches the sibling examples' tsconfig conventions (`lib`, `noUnusedLocals`, `noUnusedParameters`, `verbatimModuleSyntax`, MDX checking, and a glob `include` that also covers root-level `server.ts`/`vite.config.ts`/`remix.plugin.ts`). The two Remix-3-specific pieces are `jsxImportSource: "remix/component"` and the `@hiogawa/vite-plugin-fullstack/types` entry.
 
 - [ ] **Step 3: Create `examples/remix-3/.gitignore`**
 
 ```
+.DS_Store
+.env
 node_modules
 dist
 .sprinkles
