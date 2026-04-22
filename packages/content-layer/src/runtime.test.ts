@@ -80,14 +80,34 @@ test("findImporter returns the imported module", async () => {
         "blog/hello": () => Promise.resolve({ default: () => "component", headings: [] }),
     };
     let { findImporter } = createRuntime(stores, importers);
-    let mod = await findImporter({ id: "hello", data: { title: "Hello" } });
+    let mod = await findImporter({ id: "hello", collection: "blog", data: { title: "Hello" } });
     expect(mod.default).toBeDefined();
 });
 
 test("findImporter throws for entry with no importer", async () => {
     let stores = makeStores();
     let { findImporter } = createRuntime(stores, {});
-    await expect(findImporter({ id: "hello", data: { title: "Hello" } })).rejects.toThrow(
-        'No content found for entry "blog/hello"',
-    );
+    await expect(
+        findImporter({ id: "hello", collection: "blog", data: { title: "Hello" } }),
+    ).rejects.toThrow('No content found for entry "blog/hello"');
+});
+
+test("findImporter uses entry.collection when two collections share an ID", async () => {
+    let storeA = createDataStore();
+    storeA.set({ id: "shared", data: { name: "A" } });
+    let storeB = createDataStore();
+    storeB.set({ id: "shared", data: { name: "B" } });
+    let stores = new Map([
+        ["a", storeA],
+        ["b", storeB],
+    ]);
+
+    let importers = {
+        "a/shared": () => Promise.resolve({ default: "a-content" }),
+        "b/shared": () => Promise.resolve({ default: "b-content" }),
+    };
+
+    let { findImporter } = createRuntime(stores, importers);
+    let mod = await findImporter({ id: "shared", collection: "b", data: { name: "B" } });
+    expect(mod.default).toBe("b-content");
 });

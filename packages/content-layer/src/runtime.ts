@@ -47,20 +47,10 @@ export function createRuntime(
         return results;
     }
 
-    function findCollectionForEntry(entry: DataEntry): string {
-        for (let [name, store] of stores) {
-            if (store.has(entry.id)) {
-                return name;
-            }
-        }
-        throw new Error(`Entry "${entry.id}" not found in any collection`);
-    }
-
     async function findImporter(
-        entry: DataEntry,
+        entry: DataEntry & { collection: string },
     ): Promise<{ default: unknown; headings?: MarkdownHeading[] }> {
-        let collectionName = findCollectionForEntry(entry);
-        let key = `${collectionName}/${entry.id}`;
+        let key = `${entry.collection}/${entry.id}`;
         let importer = importers[key];
         if (!importer) {
             throw new Error(`No content found for entry "${key}"`);
