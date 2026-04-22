@@ -623,17 +623,39 @@ Create the HTML shell (`Document.tsx`) with the named Frame, the `document()` / 
 ```tsx
 import type { RemixNode } from "remix/component";
 
+import { getContext } from "remix/async-context-middleware";
 import { renderToStream } from "remix/component/server";
 import { createHtmlResponse } from "remix/response/html";
 
+import { router } from "#/entry.server.tsx";
+
 export function document(node: RemixNode): Response {
-    return createHtmlResponse(renderToStream(node));
+    let context = getContext();
+    return createHtmlResponse(
+        renderToStream(node, {
+            frameSrc: context.url,
+            async resolveFrame(src, target, ctx) {
+                let url = new URL(src, ctx?.currentFrameSrc ?? context.url);
+                let headers = new Headers({ accept: "text/html" });
+                if (target) headers.set("x-remix-frame", target);
+                let response = await router.fetch(new Request(url, { headers }));
+                if (!response.ok) {
+                    throw new Error(`Failed to resolve frame ${url.pathname}`);
+                }
+                return response.body ?? (await response.text());
+            },
+        }),
+    );
 }
 
 export function frame(node: RemixNode): Response {
-    return createHtmlResponse(renderToStream(node));
+    return new Response(renderToStream(node), {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
 }
 ```
+
+`renderToStream` needs an explicit `resolveFrame` callback when rendering a tree containing `<Frame>` — without it, `defaultResolveFrame` throws "No resolveFrame provided" on the first SSR request. The client's `run({ resolveFrame })` in `entry.browser.ts` only covers client-side soft-nav refetches; the server needs its own implementation that re-enters the router. `frame()` intentionally bypasses `createHtmlResponse` (which wraps in a full document prelude) and returns the stream directly so framed fragments are pure inner HTML.
 
 - [ ] **Step 2: Create `examples/remix-3/app/components/Document.tsx`**
 
