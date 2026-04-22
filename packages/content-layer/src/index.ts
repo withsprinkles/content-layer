@@ -2,6 +2,8 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 import type { ContentLoader, SchemaContext } from "./types.ts";
 
+export type { StandardSchemaV1 };
+
 export type {
     Collection,
     ContentLoader,
@@ -22,7 +24,7 @@ export function defineCollection<
     return input;
 }
 
-type Reference = { collection: string; id: string };
+type Reference<C extends string = string> = { collection: C; id: string };
 
 type RunContext = {
     path: NonNullable<StandardSchemaV1.Issue["path"]>;
@@ -42,28 +44,28 @@ type SyncStandardSchema<Input, Output> = {
     };
 };
 
-export type ReferenceSchema = SyncStandardSchema<string, Reference> & {
-    "~run": (value: unknown, context: RunContext) => StandardSchemaV1.Result<Reference>;
+export type ReferenceSchema<C extends string = string> = SyncStandardSchema<string, Reference<C>> & {
+    "~run": (value: unknown, context: RunContext) => StandardSchemaV1.Result<Reference<C>>;
     /**
      * Present for structural compatibility with `@remix-run/data-schema`'s
      * `Schema` type. Calling it returns the same schema unchanged — reference
      * IDs are strings, so additional checks belong on the outer combinator
      * that consumes the resolved entry, not on this helper.
      */
-    pipe: (...checks: Array<{ check: (v: Reference) => boolean; message?: string }>) => ReferenceSchema;
+    pipe: (...checks: Array<{ check: (v: Reference<C>) => boolean; message?: string }>) => ReferenceSchema<C>;
     /** Same semantics as `pipe`: present for type compatibility; a no-op at runtime. */
-    refine: (predicate: (v: Reference) => boolean, message?: string) => ReferenceSchema;
+    refine: (predicate: (v: Reference<C>) => boolean, message?: string) => ReferenceSchema<C>;
 };
 
-export function reference(collection: string): ReferenceSchema {
-    function validate(value: unknown): StandardSchemaV1.Result<Reference> {
+export function reference<C extends string>(collection: C): ReferenceSchema<C> {
+    function validate(value: unknown): StandardSchemaV1.Result<Reference<C>> {
         if (typeof value !== "string") {
             return { issues: [{ message: "Expected a string reference ID" }] };
         }
         return { value: { collection, id: value } };
     }
 
-    let schema: ReferenceSchema = {
+    let schema: ReferenceSchema<C> = {
         "~standard": {
             version: 1,
             vendor: "sprinkles",

@@ -25,14 +25,15 @@ test("generates ContentEntryMap with collection entries", () => {
     expect(output).toContain("ContentEntryMap");
 });
 
-test("uses StandardSchemaV1.InferOutput for data types", () => {
+test("inlines schema output extraction without depending on @standard-schema/spec", () => {
     let output = generateTypes(
         { blog: { schema: null as never } },
         "../../app/content.config.ts",
         'import("react").ComponentType',
     );
-    expect(output).toContain("StandardSchemaV1.InferOutput");
-    expect(output).toContain("@standard-schema/spec");
+    expect(output).toContain("_InferSchemaOutput");
+    expect(output).toContain('"~standard"');
+    expect(output).not.toContain("@standard-schema/spec");
 });
 
 test("uses adapter componentType in render return type", () => {

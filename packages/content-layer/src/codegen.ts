@@ -13,9 +13,7 @@ export function generateTypes(
         .map(([name]) => {
             return `		${name}: {
 			[id: string]: import("@withsprinkles/content-layer").DataEntry<
-				import("@standard-schema/spec").StandardSchemaV1.InferOutput<
-					_ResolveSchema<_Collections["${name}"]["schema"]>
-				>
+				_InferSchemaOutput<_ResolveSchema<_Collections["${name}"]["schema"]>>
 			> & {
 				collection: "${name}";
 			};
@@ -29,6 +27,11 @@ export function generateTypes(
 declare module "sprinkles:content" {
 	type _Collections = typeof import("${configPath}").collections;
 	type _ResolveSchema<T> = T extends (...args: any[]) => infer R ? R : T;
+	type _InferSchemaOutput<S> = S extends { "~standard": { types?: infer T } }
+		? T extends { output: infer O }
+			? O
+			: never
+		: never;
 
 	interface ContentEntryMap {
 ${entryMapEntries}
@@ -70,17 +73,17 @@ ${entryMapEntries}
 
 	export function defineCollection<
 		S extends
-			| import("@standard-schema/spec").StandardSchemaV1<any, any>
+			| import("@withsprinkles/content-layer").StandardSchemaV1<any, any>
 			| ((
 					ctx: import("@withsprinkles/content-layer").SchemaContext,
-				) => import("@standard-schema/spec").StandardSchemaV1<any, any>),
+				) => import("@withsprinkles/content-layer").StandardSchemaV1<any, any>),
 	>(
 		input: { loader: import("@withsprinkles/content-layer").ContentLoader; schema: S },
 	): { loader: import("@withsprinkles/content-layer").ContentLoader; schema: S };
 
-	export function reference(
-		collection: string,
-	): import("@standard-schema/spec").StandardSchemaV1<string, { collection: string; id: string }>;
+	export function reference<C extends string>(
+		collection: C,
+	): import("@withsprinkles/content-layer").ReferenceSchema<C>;
 }
 `;
 }
