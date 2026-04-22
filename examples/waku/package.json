@@ -8,7 +8,7 @@
     "scripts": {
         "dev": "waku dev",
         "build": "waku build",
-        "start": "waku start",
+        "start": "waku start --host localhost",
         "typecheck": "tsgo --noEmit"
     },
     "dependencies": {
