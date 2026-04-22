@@ -1,25 +1,6 @@
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-    pack: [
-        {
-            entry: {
-                index: "src/index.ts",
-                react: "src/react.ts",
-                remix: "src/remix.ts",
-                loaders: "src/loaders/index.ts",
-                runtime: "src/runtime.ts",
-                store: "src/store.ts",
-            },
-            dts: { tsgo: true },
-        },
-    ],
-    run: {
-        tasks: {
-            dev: { command: "vp pack --watch" },
-            build: { command: "vp pack" },
-        },
-    },
     fmt: {
         ignorePatterns: ["dist/**"],
         tabWidth: 4,
@@ -61,8 +42,5 @@ export default defineConfig({
             "typescript/no-floating-promises": "allow",
             "typescript/unbound-method": "allow",
         },
-    },
-    test: {
-        include: ["**/*.test.ts"],
     },
 });

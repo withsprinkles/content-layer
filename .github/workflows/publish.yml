@@ -11,6 +11,9 @@ permissions:
 jobs:
     publish:
         runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: packages/content-layer
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -20,6 +23,9 @@ jobs:
               with:
                   node-version: "24"
                   cache: true
+
+            - name: Install
+              run: vp install --frozen-lockfile
 
             - name: Run tests
               run: vp test
