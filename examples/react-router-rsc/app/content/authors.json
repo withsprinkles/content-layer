@@ -1,0 +1,12 @@
+[
+    {
+        "id": "jane",
+        "name": "Jane Doe",
+        "avatar": "https://gravatar.com/avatar/00000000000000000000000000000000?s=80&d=identicon"
+    },
+    {
+        "id": "rex",
+        "name": "Rex Morgan",
+        "avatar": "https://gravatar.com/avatar/11111111111111111111111111111111?s=80&d=identicon"
+    }
+]
