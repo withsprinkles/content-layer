@@ -1,0 +1,21 @@
+---
+title: Typed content without the boilerplate
+summary: How Content Layer uses Standard Schema to give you typed data without writing a separate TypeScript interface.
+publishedOn: 2026-03-15
+author: rex
+---
+
+## Schemas, not interfaces
+
+You define the shape of your data once — as a schema — and Content Layer hands
+you back fully typed query functions. No parallel `interface` declarations, no
+drift between runtime validation and compile-time types.
+
+- `getCollection("blog")` returns `CollectionEntry<"blog">[]`
+- `getEntry("blog", id)` returns `CollectionEntry<"blog"> | undefined`
+- `render(entry)` gives you a `Content` component and the list of headings
+
+## References are typed, too
+
+When a schema field uses `reference("authors")`, resolving it with
+`getEntry(post.data.author)` gives you a fully-typed `authors` entry back.

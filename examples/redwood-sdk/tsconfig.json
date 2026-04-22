@@ -1,0 +1,26 @@
+{
+    "include": ["**/*.ts", "**/*.tsx", "./.sprinkles/content-layer/**/*"],
+    "compilerOptions": {
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "skipLibCheck": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "moduleResolution": "Bundler",
+        "module": "ESNext",
+        "target": "ESNext",
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "types": ["./worker-configuration.d.ts", "./types/rw.d.ts", "./types/vite.d.ts"],
+        "jsx": "react-jsx",
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "mdx": {
+        "checkMdx": true
+    }
+}

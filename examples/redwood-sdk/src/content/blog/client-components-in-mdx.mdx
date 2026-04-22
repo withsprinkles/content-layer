@@ -1,0 +1,18 @@
+---
+title: Client components inside server-rendered MDX
+summary: MDX served through Content Layer compiles to server components — but nothing stops you from dropping a client component right into the middle of it.
+publishedOn: 2026-04-01
+author: jane
+---
+
+import { CopyCode } from "#/app/components/CopyCode.tsx";
+
+The `CopyCode` component below has `"use client"` at the top. It runs in the
+browser, uses React state, and talks to the clipboard API. It's inlined directly
+into this MDX file — which itself is rendered on the server as a React Server
+Component by the RedwoodSDK worker.
+
+<CopyCode lang="sh">npm install @withsprinkles/content-layer</CopyCode>
+
+That's the whole story: server-rendered content, interactive islands, one
+mental model.
