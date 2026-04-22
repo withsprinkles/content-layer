@@ -16,9 +16,11 @@
         "@remix-run/data-schema": "^0.2.0",
         "@tanstack/react-router": "^1.114.0",
         "@tanstack/react-start": "^1.114.0",
+        "@tanstack/valibot-adapter": "^1.166.9",
         "@withsprinkles/content-layer": "workspace:*",
         "react": "^19.2.4",
-        "react-dom": "^19.2.4"
+        "react-dom": "^19.2.4",
+        "valibot": "^1.3.1"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.2.2",
