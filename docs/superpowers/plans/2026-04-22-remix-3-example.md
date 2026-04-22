@@ -188,20 +188,16 @@ export let routes = route({
 - [ ] **Step 2: Create `examples/remix-3/app/controllers/home.tsx` (stub)**
 
 ```tsx
-import type { Controller } from "remix/fetch-router";
+import type { Action } from "remix/fetch-router";
 
-import { routes } from "#/routes.ts";
-
-export default {
-    actions: {
-        async home() {
-            return new Response("remix-3 example — home OK", {
-                headers: { "content-type": "text/plain; charset=utf-8" },
-            });
-        },
-    },
-} satisfies Controller<typeof routes.home>;
+export default (async () => {
+    return new Response("remix-3 example — home OK", {
+        headers: { "content-type": "text/plain; charset=utf-8" },
+    });
+}) satisfies Action<"GET", "/">;
 ```
+
+The file exports a single `Action<method, pattern>` rather than a `Controller<RouteMap>` because each of this example's routes (`get("/")`, `get("/blog/:slug")`) is a single `Route`, not a `RouteMap`. `Controller<...>` takes a RouteMap with multiple named actions underneath — that shape applies to `form()` routes (which expand to `{ index: GET, action: POST }`) but not single-method routes. See `node_modules/.pnpm/@remix-run+fetch-router@0.18.0/.../lib/controller.d.ts` for the full type hierarchy.
 
 - [ ] **Step 3: Create `examples/remix-3/app/entry.server.tsx`**
 
@@ -225,6 +221,8 @@ if (import.meta.hot) {
     import.meta.hot.accept();
 }
 ```
+
+Use `router.map(routes.home, home)` — not `router.get("/", home)` — so `routes.ts` remains the single source of truth for URL patterns. The `router.map(target, action)` overload accepts a `Route` as target and infers the method and pattern for the action's types.
 
 - [ ] **Step 4: Create `examples/remix-3/server.ts`**
 
@@ -683,22 +681,17 @@ Note: `Document` returns `() => JSX` — the outer function is the setup phase, 
 - [ ] **Step 3: Replace `examples/remix-3/app/controllers/home.tsx` with Frame-aware version**
 
 ```tsx
-import type { Controller } from "remix/fetch-router";
+import type { Action } from "remix/fetch-router";
 
 import { Document } from "#/components/Document.tsx";
 import { document, frame } from "#/lib/render.tsx";
-import { routes } from "#/routes.ts";
 
-export default {
-    actions: {
-        async home(ctx) {
-            if (ctx.headers.get("x-remix-frame") === "content") {
-                return frame(<p>Home</p>);
-            }
-            return document(<Document />);
-        },
-    },
-} satisfies Controller<typeof routes.home>;
+export default (async ctx => {
+    if (ctx.headers.get("x-remix-frame") === "content") {
+        return frame(<p>Home</p>);
+    }
+    return document(<Document />);
+}) satisfies Action<"GET", "/">;
 ```
 
 - [ ] **Step 4: Verify typecheck**
@@ -833,12 +826,11 @@ Replace the stub `<p>Home</p>` with a real post list pulled from `getCollection(
 - [ ] **Step 1: Replace `examples/remix-3/app/controllers/home.tsx`**
 
 ```tsx
-import type { Controller } from "remix/fetch-router";
+import type { Action } from "remix/fetch-router";
 import { getCollection } from "sprinkles:content";
 
 import { Document } from "#/components/Document.tsx";
 import { document, frame } from "#/lib/render.tsx";
-import { routes } from "#/routes.ts";
 import {
     pageHeadingStyle,
     postDateStyle,
@@ -848,48 +840,40 @@ import {
     postTitleStyle,
 } from "#/styles.ts";
 
-export default {
-    actions: {
-        async home(ctx) {
-            if (ctx.headers.get("x-remix-frame") !== "content") {
-                return document(<Document />);
-            }
-            let posts = (await getCollection("blog")).toSorted(
-                (a, b) => b.data.publishedOn.getTime() - a.data.publishedOn.getTime(),
-            );
-            return frame(
-                <main>
-                    <h1 mix={pageHeadingStyle}>Blog</h1>
-                    <ul mix={postListStyle}>
-                        {posts.map(post => (
-                            <li key={post.id}>
-                                <a
-                                    href={`/blog/${post.id}`}
-                                    rmx-target="content"
-                                    mix={postLinkStyle}
-                                >
-                                    <h2 mix={postTitleStyle}>{post.data.title}</h2>
-                                    <p mix={postSummaryStyle}>{post.data.summary}</p>
-                                    <time
-                                        mix={postDateStyle}
-                                        dateTime={post.data.publishedOn.toISOString()}
-                                    >
-                                        {post.data.publishedOn.toLocaleDateString("en-US", {
-                                            year: "numeric",
-                                            month: "long",
-                                            day: "numeric",
-                                            timeZone: "UTC",
-                                        })}
-                                    </time>
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
-                </main>,
-            );
-        },
-    },
-} satisfies Controller<typeof routes.home>;
+export default (async ctx => {
+    if (ctx.headers.get("x-remix-frame") !== "content") {
+        return document(<Document />);
+    }
+    let posts = (await getCollection("blog")).toSorted(
+        (a, b) => b.data.publishedOn.getTime() - a.data.publishedOn.getTime(),
+    );
+    return frame(
+        <main>
+            <h1 mix={pageHeadingStyle}>Blog</h1>
+            <ul mix={postListStyle}>
+                {posts.map(post => (
+                    <li key={post.id}>
+                        <a href={`/blog/${post.id}`} rmx-target="content" mix={postLinkStyle}>
+                            <h2 mix={postTitleStyle}>{post.data.title}</h2>
+                            <p mix={postSummaryStyle}>{post.data.summary}</p>
+                            <time
+                                mix={postDateStyle}
+                                dateTime={post.data.publishedOn.toISOString()}
+                            >
+                                {post.data.publishedOn.toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                    timeZone: "UTC",
+                                })}
+                            </time>
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        </main>,
+    );
+}) satisfies Action<"GET", "/">;
 ```
 
 - [ ] **Step 2: Verify typecheck**
@@ -927,12 +911,11 @@ Add the detail page. Wire into `entry.server.tsx` so `/blog/:slug` routes to it.
 - [ ] **Step 1: Create `examples/remix-3/app/controllers/post.tsx`**
 
 ```tsx
-import type { Controller } from "remix/fetch-router";
+import type { Action } from "remix/fetch-router";
 import { getEntry, render } from "sprinkles:content";
 
 import { Document } from "#/components/Document.tsx";
 import { document, frame } from "#/lib/render.tsx";
-import { routes } from "#/routes.ts";
 import {
     articleHeaderStyle,
     articleMetaStyle,
@@ -941,52 +924,47 @@ import {
     proseStyle,
 } from "#/styles.ts";
 
-export default {
-    actions: {
-        async post(ctx) {
-            if (ctx.headers.get("x-remix-frame") !== "content") {
-                return document(<Document />);
-            }
-            let slug = ctx.params.slug;
-            let post = await getEntry("blog", slug);
-            if (!post) {
-                return new Response("Not Found", { status: 404 });
-            }
-            let author = await getEntry(post.data.author);
-            let { Content } = await render(post);
-            return frame(
-                <article>
-                    <header mix={articleHeaderStyle}>
-                        <h1 mix={articleTitleStyle}>{post.data.title}</h1>
-                        <div mix={articleMetaStyle}>
-                            {author && (
-                                <>
-                                    <img src={author.data.avatar} alt="" mix={avatarStyle} />
-                                    <span>{author.data.name}</span>
-                                    <span aria-hidden>·</span>
-                                </>
-                            )}
-                            <time dateTime={post.data.publishedOn.toISOString()}>
-                                {post.data.publishedOn.toLocaleDateString("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                    timeZone: "UTC",
-                                })}
-                            </time>
-                        </div>
-                    </header>
-                    <div mix={proseStyle}>
-                        <Content />
-                    </div>
-                </article>,
-            );
-        },
-    },
-} satisfies Controller<typeof routes.post>;
+export default (async ctx => {
+    if (ctx.headers.get("x-remix-frame") !== "content") {
+        return document(<Document />);
+    }
+    let post = await getEntry("blog", ctx.params.slug);
+    if (!post) {
+        return new Response("Not Found", { status: 404 });
+    }
+    let author = await getEntry(post.data.author);
+    let { Content } = await render(post);
+    return frame(
+        <article>
+            <header mix={articleHeaderStyle}>
+                <h1 mix={articleTitleStyle}>{post.data.title}</h1>
+                <div mix={articleMetaStyle}>
+                    {author && (
+                        <>
+                            <img src={author.data.avatar} alt="" mix={avatarStyle} />
+                            <span>{author.data.name}</span>
+                            <span aria-hidden>·</span>
+                        </>
+                    )}
+                    <time dateTime={post.data.publishedOn.toISOString()}>
+                        {post.data.publishedOn.toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            timeZone: "UTC",
+                        })}
+                    </time>
+                </div>
+            </header>
+            <div mix={proseStyle}>
+                <Content />
+            </div>
+        </article>,
+    );
+}) satisfies Action<"GET", "/blog/:slug">;
 ```
 
-If `ctx.params.slug` does not typecheck, consult the Remix 3 fetch-router docs at `~/Developer/Playgrounds/contacts/remix-3-contacts/docs/remix/fetch-router.md` for the exact URL-param accessor and adjust the line + the `Controller<typeof routes.post>` generic accordingly.
+`ctx.params.slug` is typed as `string` because the pattern `/blog/:slug` is baked into the `Action` type — the `satisfies` clause threads the pattern through `Params<pattern>` into the handler's context.
 
 - [ ] **Step 2: Wire controller in `examples/remix-3/app/entry.server.tsx`**
 
