@@ -288,20 +288,10 @@ export function frame(node: RemixNode): Response {
 
 The two helpers are intentionally separate even though they share an implementation — it documents the intent at call sites and leaves room for either branch to diverge (e.g., adding a `Vary` header on framed responses).
 
-`app/entry.browser.ts` is the navigation interceptor, copied and trimmed from the default template:
+`app/entry.browser.ts` is minimal — just the `run()` call providing the module loader and frame resolver:
 
 ```ts
-import { navigate, run } from "remix/component";
-
-navigation.addEventListener("navigate", async event => {
-    if (!event.canIntercept) return;
-    if (!event.sourceElement) return;
-    if (!event.sourceElement.closest("a, area")) return;
-    let target = event.sourceElement.getAttribute("rmx-target") ?? undefined;
-    let src = event.sourceElement.getAttribute("rmx-src") ?? undefined;
-    event.preventDefault();
-    await navigate(event.destination.url, { target, src });
-});
+import { run } from "remix/component";
 
 run({
     async loadModule(moduleUrl, exportName) {
@@ -317,7 +307,7 @@ run({
 });
 ```
 
-The form-submission branch is dropped — this example has no forms. The unchanged portion is what wires the soft-nav + frame protocol end to end.
+No custom `navigation.addEventListener("navigate", …)` handler. `run()` installs its own Frame-aware navigation interceptor internally; the custom listener in the Remix 3 default template exists only to handle form submissions and manual focus management, neither of which apply here.
 
 List-page anchor tags get `rmx-target="content"` so clicking a post swaps only the frame; the `<html>` shell and `<head>` remain untouched between navigations.
 
