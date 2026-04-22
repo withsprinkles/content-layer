@@ -29,11 +29,26 @@ type RunContext = {
     options?: unknown;
 };
 
-export function reference(
-    collection: string,
-): StandardSchemaV1<string, Reference> & {
+/** Sync-only validate signature, compatible with `@remix-run/data-schema`'s Schema type. */
+type SyncValidate<Output> = (
+    value: unknown,
+    options?: StandardSchemaV1.Options,
+) => StandardSchemaV1.Result<Output>;
+
+type SyncStandardSchema<Input, Output> = {
+    "~standard": Omit<StandardSchemaV1.Props<Input, Output>, "validate"> & {
+        validate: SyncValidate<Output>;
+        types?: StandardSchemaV1.Types<Input, Output>;
+    };
+};
+
+export type ReferenceSchema = SyncStandardSchema<string, Reference> & {
     "~run": (value: unknown, context: RunContext) => StandardSchemaV1.Result<Reference>;
-} {
+    pipe: (...checks: Array<{ check: (v: Reference) => boolean; message?: string }>) => ReferenceSchema;
+    refine: (predicate: (v: Reference) => boolean, message?: string) => ReferenceSchema;
+};
+
+export function reference(collection: string): ReferenceSchema {
     function validate(value: unknown): StandardSchemaV1.Result<Reference> {
         if (typeof value !== "string") {
             return { issues: [{ message: "Expected a string reference ID" }] };
@@ -41,7 +56,7 @@ export function reference(
         return { value: { collection, id: value } };
     }
 
-    return {
+    const schema: ReferenceSchema = {
         "~standard": {
             version: 1,
             vendor: "sprinkles",
@@ -59,5 +74,13 @@ export function reference(
             }
             return result;
         },
+        pipe(..._checks) {
+            return schema;
+        },
+        refine(_predicate, _message) {
+            return schema;
+        },
     };
+
+    return schema;
 }
