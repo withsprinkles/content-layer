@@ -29,6 +29,7 @@ export async function ServerComponent() {
                                     year: "numeric",
                                     month: "long",
                                     day: "numeric",
+                                    timeZone: "UTC",
                                 })}
                             </time>
                         </Link>

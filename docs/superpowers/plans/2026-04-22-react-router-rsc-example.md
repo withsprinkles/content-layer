@@ -496,6 +496,7 @@ export async function ServerComponent() {
                                     year: "numeric",
                                     month: "long",
                                     day: "numeric",
+                                    timeZone: "UTC",
                                 })}
                             </time>
                         </Link>
@@ -589,6 +590,7 @@ export async function ServerComponent({ params }: Route.ComponentProps) {
                             year: "numeric",
                             month: "long",
                             day: "numeric",
+                            timeZone: "UTC",
                         })}
                     </time>
                 </div>
