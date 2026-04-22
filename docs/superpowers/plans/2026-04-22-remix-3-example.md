@@ -124,7 +124,8 @@ Copy the Remix 3 Vite plugin and add the Vite config + Node server. After this t
 
 - Create: `examples/remix-3/remix.plugin.ts`
 - Create: `examples/remix-3/vite.config.ts`
-- Create: `examples/remix-3/server.ts`
+
+`server.ts` is intentionally deferred to Task 3 — it imports from `./app/entry.server.tsx`, which Task 3 creates. Committing `server.ts` here would leave the repo failing `tsgo --noEmit` (and the workspace's pre-commit hook, which type-checks), so it ships in the same commit as its import target.
 
 - [ ] **Step 1: Copy `remix.plugin.ts` verbatim from the Remix 3 default template**
 
@@ -148,43 +149,30 @@ export default defineConfig({
 
 Plugin order matters: `contentLayer` must come before `mdx` so the virtual MDX modules exist by the time `mdx()` transforms them.
 
-- [ ] **Step 3: Create `examples/remix-3/server.ts`**
+- [ ] **Step 3: Verify typecheck**
 
-```ts
-import http from "node:http";
-import { createRequestListener } from "remix/node-fetch-server";
-
-import router from "./app/entry.server.tsx";
-
-let port = process.env.PORT || 3000;
-
-let server = http.createServer(createRequestListener(request => router.fetch(request)));
-
-server.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
-```
-
-Note: `./app/entry.server.tsx` doesn't exist yet. TypeScript will report an error until Task 3 — that's expected; do not create a stub here.
+Run: `cd examples/remix-3 && pnpm typecheck && cd -`
+Expected: Exit 0. If errors, resolve before committing — this commit must be green because the pre-commit hook type-checks.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add examples/remix-3/remix.plugin.ts examples/remix-3/vite.config.ts examples/remix-3/server.ts
-git commit -m "Add Remix 3 vite plugin, vite config, and node server"
+git add examples/remix-3/remix.plugin.ts examples/remix-3/vite.config.ts
+git commit -m "Add Remix 3 vite plugin and vite config"
 ```
 
 ---
 
-## Task 3: Routes, server entry, stub controller
+## Task 3: Routes, server entry, stub controller, Node server
 
-Wire up just enough that `GET /` returns a plain-text 200. No Document, no Frame, no content — just proof that the router/controller pipeline works.
+Wire up just enough that `GET /` returns a plain-text 200. No Document, no Frame, no content — just proof that the router/controller pipeline works. Also lands `server.ts` so the whole commit typechecks (its import target `app/entry.server.tsx` lands in this same commit).
 
 **Files:**
 
 - Create: `examples/remix-3/app/routes.ts`
 - Create: `examples/remix-3/app/controllers/home.tsx`
 - Create: `examples/remix-3/app/entry.server.tsx`
+- Create: `examples/remix-3/server.ts`
 
 - [ ] **Step 1: Create `examples/remix-3/app/routes.ts`**
 
@@ -238,23 +226,42 @@ if (import.meta.hot) {
 }
 ```
 
-- [ ] **Step 4: Verify typecheck**
+- [ ] **Step 4: Create `examples/remix-3/server.ts`**
+
+```ts
+import http from "node:http";
+import { createRequestListener } from "remix/node-fetch-server";
+
+import router from "./app/entry.server.tsx";
+
+let port = process.env.PORT || 3000;
+
+let server = http.createServer(createRequestListener(request => router.fetch(request)));
+
+server.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});
+```
+
+`server.ts` is a standalone Node entry for running the built SSR bundle outside of `vp preview`. No script invokes it; keep it as a reference for users who deploy this pattern.
+
+- [ ] **Step 5: Verify typecheck**
 
 Run: `cd examples/remix-3 && pnpm typecheck && cd -`
-Expected: Exit 0. If errors reference missing `.sprinkles/content-layer/content.d.ts`, that's fine — it gets generated in Task 6. If errors reference anything else, fix before continuing.
+Expected: Exit 0. If errors reference missing `.sprinkles/content-layer/content.d.ts`, that's fine — it gets generated in Task 8. If errors reference anything else, fix before continuing.
 
-- [ ] **Step 5: Verify dev server**
+- [ ] **Step 6: Verify dev server**
 
-Run: `cd examples/remix-3 && vp dev` in one terminal.
-In another: `curl -s http://localhost:5173/ | head -1` (or whatever port `vp dev` prints — it may be 3000 if `server.ts` is active, or 5173 if Vite serves directly via middleware mode).
+Run: `cd examples/remix-3 && vp dev` (let it run in the background or a second terminal).
+Wait for `vp dev` to print the URL, then `curl -s <URL>/` (typically `http://localhost:5173/`).
 Expected: Response body `remix-3 example — home OK`.
 Stop `vp dev` after verifying.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add examples/remix-3/app
-git commit -m "Add routes, stub home controller, and server router"
+git add examples/remix-3/app examples/remix-3/server.ts
+git commit -m "Add routes, stub home controller, server router, and node server"
 ```
 
 ---
