@@ -1,7 +1,11 @@
 import type { Action } from "remix/fetch-router";
 
-export default (async () => {
-    return new Response("remix-3 example — home OK", {
-        headers: { "content-type": "text/plain; charset=utf-8" },
-    });
+import { Document } from "#/components/Document.tsx";
+import { document, frame } from "#/lib/render.tsx";
+
+export default (async ctx => {
+    if (ctx.headers.get("x-remix-frame") === "content") {
+        return frame(<p>Home</p>);
+    }
+    return document(<Document />);
 }) satisfies Action<"GET", "/">;
