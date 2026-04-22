@@ -1,0 +1,35 @@
+{
+    "name": "@withsprinkles/example-waku",
+    "private": true,
+    "type": "module",
+    "imports": {
+        "#/*": "./src/*"
+    },
+    "scripts": {
+        "dev": "waku dev",
+        "build": "waku build",
+        "start": "waku start",
+        "typecheck": "tsgo --noEmit"
+    },
+    "dependencies": {
+        "@mdx-js/rollup": "^3.1.1",
+        "@withsprinkles/content-layer": "workspace:*",
+        "arktype": "^2.2.0",
+        "hono": "^4.12.14",
+        "react": "~19.2.5",
+        "react-dom": "~19.2.5",
+        "react-server-dom-webpack": "~19.2.5",
+        "server-only": "^0.0.1",
+        "waku": "1.0.0-alpha.8"
+    },
+    "devDependencies": {
+        "@tailwindcss/typography": "^0.5.19",
+        "@tailwindcss/vite": "^4.2.2",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "@typescript/native-preview": "latest",
+        "@vitejs/plugin-react": "^6.0.1",
+        "tailwindcss": "^4.2.2",
+        "vite": "^8.0.3"
+    }
+}

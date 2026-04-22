@@ -1,0 +1,27 @@
+{
+    "include": ["**/*.ts", "**/*.tsx", "./.sprinkles/content-layer/**/*"],
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "skipLibCheck": true,
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+        "moduleDetection": "force",
+        "esModuleInterop": true,
+        "noEmit": true,
+        "moduleResolution": "Bundler",
+        "module": "ESNext",
+        "target": "ESNext",
+        "lib": ["ESNext", "DOM", "DOM.Iterable"],
+        "types": ["vite/client"],
+        "jsx": "react-jsx",
+        "paths": {
+            "#/*": ["./src/*"]
+        }
+    },
+    "mdx": {
+        "checkMdx": true
+    }
+}
