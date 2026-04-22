@@ -93,7 +93,11 @@ export type InferSchemaOutput<S> = S extends { "~standard": { types?: infer T } 
         : never
     : never;
 
-export type ResolveSchema<T> = T extends (...args: any[]) => infer R ? R : T;
+export type ResolveSchema<T> = T extends { "~standard": unknown }
+    ? T
+    : T extends (...args: any[]) => infer R
+      ? R
+      : T;
 
 export interface FrameworkAdapter {
     preamble?: string;

@@ -1,3 +1,4 @@
+import type { StandardSchemaV1 } from "@standard-schema/spec";
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
 
 import { mkdir, writeFile } from "node:fs/promises";
@@ -9,6 +10,7 @@ import type {
     FrameworkAdapter,
     LoaderContext,
     ParseDataOptions,
+    SchemaContext,
 } from "./types.ts";
 
 import { generateTypes } from "./codegen.ts";
@@ -63,18 +65,22 @@ export function createContentLayerPlugin(options: InternalPluginOptions): Plugin
             props: ParseDataOptions<Data>,
         ): Promise<Data> => {
             if (!schema) return props.data;
-            let resolvedSchema =
-                typeof schema === "function"
-                    ? schema({
-                          image: () => ({
-                              "~standard": {
-                                  version: 1 as const,
-                                  vendor: "sprinkles",
-                                  validate: (v: unknown) => ({ value: v as string }),
-                              },
-                          }),
-                      })
-                    : schema;
+            // A schema can be either a Standard Schema object or a factory
+            // that accepts a SchemaContext. Some Standard Schema libraries
+            // (e.g. Arktype) expose their schemas as callable functions with
+            // a "~standard" property, so distinguish the two by that property.
+            let isFactory = typeof schema === "function" && !("~standard" in (schema as object));
+            let resolvedSchema = isFactory
+                ? (schema as (ctx: SchemaContext) => StandardSchemaV1<unknown, unknown>)({
+                      image: () => ({
+                          "~standard": {
+                              version: 1 as const,
+                              vendor: "sprinkles",
+                              validate: (v: unknown) => ({ value: v as string }),
+                          },
+                      }),
+                  })
+                : (schema as StandardSchemaV1<unknown, unknown>);
             let result = await resolvedSchema["~standard"].validate(props.data);
             if ("issues" in result) {
                 let messages = (result.issues as { message: string }[])
