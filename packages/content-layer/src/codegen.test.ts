@@ -25,14 +25,14 @@ test("generates ContentEntryMap with collection entries", () => {
     expect(output).toContain("ContentEntryMap");
 });
 
-test("inlines schema output extraction without depending on @standard-schema/spec", () => {
+test("references schema helpers from @withsprinkles/content-layer, not @standard-schema/spec", () => {
     let output = generateTypes(
         { blog: { schema: null as never } },
         "../../app/content.config.ts",
         'import("react").ComponentType',
     );
-    expect(output).toContain("_InferSchemaOutput");
-    expect(output).toContain('"~standard"');
+    expect(output).toContain('import("@withsprinkles/content-layer").InferSchemaOutput');
+    expect(output).toContain('import("@withsprinkles/content-layer").ResolveSchema');
     expect(output).not.toContain("@standard-schema/spec");
 });
 

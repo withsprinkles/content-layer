@@ -13,7 +13,11 @@ export function generateTypes(
         .map(([name]) => {
             return `		${name}: {
 			[id: string]: import("@withsprinkles/content-layer").DataEntry<
-				_InferSchemaOutput<_ResolveSchema<_Collections["${name}"]["schema"]>>
+				import("@withsprinkles/content-layer").InferSchemaOutput<
+					import("@withsprinkles/content-layer").ResolveSchema<
+						_Collections["${name}"]["schema"]
+					>
+				>
 			> & {
 				collection: "${name}";
 			};
@@ -26,12 +30,6 @@ export function generateTypes(
 
 declare module "sprinkles:content" {
 	type _Collections = typeof import("${configPath}").collections;
-	type _ResolveSchema<T> = T extends (...args: any[]) => infer R ? R : T;
-	type _InferSchemaOutput<S> = S extends { "~standard": { types?: infer T } }
-		? T extends { output: infer O }
-			? O
-			: never
-		: never;
 
 	interface ContentEntryMap {
 ${entryMapEntries}

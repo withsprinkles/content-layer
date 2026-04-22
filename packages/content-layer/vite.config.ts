@@ -22,5 +22,10 @@ export default defineConfig({
     },
     test: {
         include: ["**/*.test.ts"],
+        typecheck: {
+            enabled: true,
+            checker: "tsgo",
+            tsconfig: "tsconfig.json",
+        },
     },
 });

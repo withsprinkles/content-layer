@@ -87,6 +87,14 @@ export interface GenerateIdOptions {
     data: Record<string, unknown>;
 }
 
+export type InferSchemaOutput<S> = S extends { "~standard": { types?: infer T } }
+    ? T extends { output: infer O }
+        ? O
+        : never
+    : never;
+
+export type ResolveSchema<T> = T extends (...args: any[]) => infer R ? R : T;
+
 export interface FrameworkAdapter {
     preamble?: string;
     wrapContent?: string;

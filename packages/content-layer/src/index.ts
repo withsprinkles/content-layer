@@ -10,11 +10,13 @@ export type {
     DataEntry,
     DataStore,
     GenerateIdOptions,
+    InferSchemaOutput,
     LoaderContext,
     MarkdownHeading,
     MetaStore,
     ParseDataOptions,
     RenderedContent,
+    ResolveSchema,
     SchemaContext,
 } from "./types.ts";
 
@@ -44,7 +46,10 @@ type SyncStandardSchema<Input, Output> = {
     };
 };
 
-export type ReferenceSchema<C extends string = string> = SyncStandardSchema<string, Reference<C>> & {
+export type ReferenceSchema<C extends string = string> = SyncStandardSchema<
+    string,
+    Reference<C>
+> & {
     "~run": (value: unknown, context: RunContext) => StandardSchemaV1.Result<Reference<C>>;
     /**
      * Present for structural compatibility with `@remix-run/data-schema`'s
@@ -52,7 +57,9 @@ export type ReferenceSchema<C extends string = string> = SyncStandardSchema<stri
      * IDs are strings, so additional checks belong on the outer combinator
      * that consumes the resolved entry, not on this helper.
      */
-    pipe: (...checks: Array<{ check: (v: Reference<C>) => boolean; message?: string }>) => ReferenceSchema<C>;
+    pipe: (
+        ...checks: Array<{ check: (v: Reference<C>) => boolean; message?: string }>
+    ) => ReferenceSchema<C>;
     /** Same semantics as `pipe`: present for type compatibility; a no-op at runtime. */
     refine: (predicate: (v: Reference<C>) => boolean, message?: string) => ReferenceSchema<C>;
 };
