@@ -1,4 +1,5 @@
 import home from "#/controllers/home.tsx";
+import post from "#/controllers/post.tsx";
 import { routes } from "#/routes.ts";
 import { asyncContext } from "remix/async-context-middleware";
 import { createRouter } from "remix/fetch-router";
@@ -9,6 +10,7 @@ export let router = createRouter({
 });
 
 router.map(routes.home, home);
+router.map(routes.post, post);
 
 export default router;
 
