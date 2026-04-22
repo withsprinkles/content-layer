@@ -2,14 +2,14 @@
     "name": "@withsprinkles/example-react-router-rsc",
     "private": true,
     "type": "module",
+    "imports": {
+        "#/*": "./app/*"
+    },
     "scripts": {
         "dev": "react-router dev",
         "build": "react-router build",
         "start": "react-router-serve build/server/index.js",
         "typecheck": "react-router typegen && tsgo --noEmit"
-    },
-    "imports": {
-        "#/*": "./app/*"
     },
     "dependencies": {
         "@mdx-js/rollup": "^3.1.1",
@@ -23,7 +23,6 @@
     },
     "devDependencies": {
         "@react-router/dev": "^7.14.0",
-        "@tailwindcss/typography": "^0.5.15",
         "@tailwindcss/vite": "^4.2.2",
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
