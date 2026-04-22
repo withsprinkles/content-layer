@@ -43,4 +43,8 @@ export default defineConfig({
             "typescript/unbound-method": "allow",
         },
     },
+    staged: {
+        "*.{js,mjs,cjs,ts,mts,cts,tsx,json,jsonc,md,yaml,yml}": "vp fmt",
+        "*.{js,mjs,cjs,ts,mts,cts,tsx}": "vp lint",
+    },
 });

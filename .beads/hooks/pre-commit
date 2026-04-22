@@ -22,3 +22,18 @@ if command -v bd >/dev/null 2>&1; then
   if [ $_bd_exit -ne 0 ]; then exit $_bd_exit; fi
 fi
 # --- END BEADS INTEGRATION v1.0.2 ---
+
+# Fail early on pnpm-lock.yaml drift — this class of issue blocked the v0.1.4
+# release when CI's `vp install --frozen-lockfile` failed at publish time.
+# Only run the check when a package.json or the lockfile is staged, since
+# frozen-install is otherwise a waste on most commits.
+if git diff --cached --name-only --diff-filter=ACMR | grep -qE '(^|/)(pnpm-lock\.yaml|package\.json)$'; then
+    if ! vp install --frozen-lockfile >/dev/null 2>&1; then
+        echo >&2 "pre-commit: pnpm-lock.yaml is out of sync with a package.json."
+        echo >&2 "pre-commit: run \`vp install\` and stage the updated pnpm-lock.yaml."
+        exit 1
+    fi
+fi
+
+# Run formatter and linter on staged files (config: vite.config.ts -> staged).
+vp staged
