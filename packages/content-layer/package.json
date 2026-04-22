@@ -1,6 +1,6 @@
 {
     "name": "@withsprinkles/content-layer",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Load, validate, and query local or remote content as typed data in JSX apps.",
     "homepage": "https://github.com/withsprinkles/content-layer#readme",
     "bugs": {
