@@ -12,7 +12,7 @@ export function CopyCode({ lang, children }: { lang?: string; children: string }
     }
 
     return (
-        <div className="relative my-4 overflow-hidden rounded-md bg-slate-900 text-slate-100">
+        <div className="not-prose relative my-4 overflow-hidden rounded-md bg-slate-900 text-slate-100">
             <button
                 type="button"
                 onClick={handleCopy}

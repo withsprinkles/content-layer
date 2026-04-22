@@ -18,11 +18,7 @@ export async function ServerComponent({ params }: Route.ComponentProps) {
                 <div className="mt-3 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     {author && (
                         <>
-                            <img
-                                src={author.data.avatar}
-                                alt=""
-                                className="h-6 w-6 rounded-full"
-                            />
+                            <img src={author.data.avatar} alt="" className="h-6 w-6 rounded-full" />
                             <span>{author.data.name}</span>
                             <span aria-hidden>·</span>
                         </>
