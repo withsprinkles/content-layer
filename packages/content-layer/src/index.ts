@@ -44,7 +44,14 @@ type SyncStandardSchema<Input, Output> = {
 
 export type ReferenceSchema = SyncStandardSchema<string, Reference> & {
     "~run": (value: unknown, context: RunContext) => StandardSchemaV1.Result<Reference>;
+    /**
+     * Present for structural compatibility with `@remix-run/data-schema`'s
+     * `Schema` type. Calling it returns the same schema unchanged — reference
+     * IDs are strings, so additional checks belong on the outer combinator
+     * that consumes the resolved entry, not on this helper.
+     */
     pipe: (...checks: Array<{ check: (v: Reference) => boolean; message?: string }>) => ReferenceSchema;
+    /** Same semantics as `pipe`: present for type compatibility; a no-op at runtime. */
     refine: (predicate: (v: Reference) => boolean, message?: string) => ReferenceSchema;
 };
 
@@ -56,7 +63,7 @@ export function reference(collection: string): ReferenceSchema {
         return { value: { collection, id: value } };
     }
 
-    const schema: ReferenceSchema = {
+    let schema: ReferenceSchema = {
         "~standard": {
             version: 1,
             vendor: "sprinkles",
