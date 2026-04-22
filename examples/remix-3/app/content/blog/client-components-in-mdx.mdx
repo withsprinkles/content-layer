@@ -5,10 +5,14 @@ publishedOn: 2026-04-01
 author: jane
 ---
 
+import { CopyCode } from "#/components/CopyCode.tsx";
+
 The `CopyCode` island below is wrapped in `clientEntry()`. It runs in the
 browser, manages its own state via Remix 3's closure-plus-`handle.update()`
 pattern, and talks to the clipboard API. It's inlined directly into this MDX
 file — which itself is rendered on the server.
+
+<CopyCode lang="sh">npm install @withsprinkles/content-layer</CopyCode>
 
 That's the whole story: server-rendered content, interactive islands, one
 mental model.
