@@ -31,3 +31,29 @@ test("reference has correct ~standard metadata", () => {
     expect(schema["~standard"].version).toBe(1);
     expect(schema["~standard"].vendor).toBe("sprinkles");
 });
+
+test("reference's ~run returns the reference object on valid input", () => {
+    let schema = reference("authors");
+    let result = schema["~run"]("mark", { path: ["posts", 0, "author"] });
+    expect(result).toEqual({ value: { collection: "authors", id: "mark" } });
+});
+
+test("reference's ~run threads context.path into returned issues", () => {
+    let schema = reference("authors");
+    let result = schema["~run"](42, { path: ["posts", 0, "author"] });
+    expect(result).toHaveProperty("issues");
+    if ("issues" in result && result.issues) {
+        expect(result.issues).toHaveLength(1);
+        expect(result.issues[0].message).toBe("Expected a string reference ID");
+        expect(result.issues[0].path).toEqual(["posts", 0, "author"]);
+    }
+});
+
+test("reference's ~run omits path when context.path is empty", () => {
+    let schema = reference("authors");
+    let result = schema["~run"](42, { path: [] });
+    expect(result).toHaveProperty("issues");
+    if ("issues" in result && result.issues) {
+        expect(result.issues[0].path).toBeUndefined();
+    }
+});

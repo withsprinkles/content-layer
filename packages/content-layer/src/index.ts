@@ -22,19 +22,42 @@ export function defineCollection<
     return input;
 }
 
+type Reference = { collection: string; id: string };
+
+type RunContext = {
+    path: NonNullable<StandardSchemaV1.Issue["path"]>;
+    options?: unknown;
+};
+
 export function reference(
     collection: string,
-): StandardSchemaV1<string, { collection: string; id: string }> {
+): StandardSchemaV1<string, Reference> & {
+    "~run": (value: unknown, context: RunContext) => StandardSchemaV1.Result<Reference>;
+} {
+    function validate(value: unknown): StandardSchemaV1.Result<Reference> {
+        if (typeof value !== "string") {
+            return { issues: [{ message: "Expected a string reference ID" }] };
+        }
+        return { value: { collection, id: value } };
+    }
+
     return {
         "~standard": {
             version: 1,
             vendor: "sprinkles",
-            validate(value) {
-                if (typeof value !== "string") {
-                    return { issues: [{ message: "Expected a string reference ID" }] };
-                }
-                return { value: { collection, id: value } };
-            },
+            validate,
+        },
+        "~run"(value, context) {
+            let result = validate(value);
+            if (result.issues) {
+                return {
+                    issues: result.issues.map(issue => {
+                        let path = issue.path ?? context.path;
+                        return path.length > 0 ? { ...issue, path } : issue;
+                    }),
+                };
+            }
+            return result;
         },
     };
 }
