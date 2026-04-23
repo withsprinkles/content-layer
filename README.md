@@ -4,6 +4,18 @@ Load, validate, and query local content as typed data in Vite apps.
 
 Content Layer is a Vite plugin that turns local files (Markdown, MDX, JSON, YAML) into fully typed, validated, and queryable collections available at build time and during development with HMR.
 
+## Examples
+
+Runnable examples live in [examples/](examples/), each wiring Content Layer into a different framework and schema library.
+
+| Example                                              | Framework                                                                                                                                   | Adapter | Schema Library                                                                                       |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------- |
+| [`react-router-rsc`](examples/react-router-rsc/)     | [React Router v7](https://reactrouter.com/) [(RSC)](https://reactrouter.com/how-to/react-server-components)                                 | React   | [`@remix-run/data-schema`](https://github.com/remix-run/remix/tree/main/packages/data-schema#readme) |
+| [`redwood-sdk`](examples/redwood-sdk/)               | [RedwoodSDK](https://rwsdk.com/)                                                                                                            | React   | [Zod](https://zod.dev/)                                                                              |
+| [`tanstack-start-rsc`](examples/tanstack-start-rsc/) | [TanStack Start](https://tanstack.com/start/latest) [(RSC)](https://tanstack.com/start/latest/docs/framework/react/guide/server-components) | React   | [Valibot](https://valibot.dev/)                                                                      |
+| [`waku`](examples/waku/)                             | [Waku](https://waku.gg/)                                                                                                                    | React   | [ArkType](https://arktype.io/)                                                                       |
+| [`remix-3`](examples/remix-3/)                       | [Remix](https://github.com/remix-run/remix)                                                                                                 | Remix   | [`remix/data-schema`](https://github.com/remix-run/remix/tree/main/packages/data-schema#readme)      |
+
 ## Install
 
 ```sh
