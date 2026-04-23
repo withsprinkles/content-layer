@@ -1,62 +1,66 @@
-/* Preflight reset */
-*,
-::before,
-::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    border: 0 solid;
+@layer base, rmx;
+
+@layer base {
+    /* Preflight reset */
+    *,
+    ::before,
+    ::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        border: 0 solid;
+    }
+
+    html {
+        line-height: 1.5;
+        -webkit-text-size-adjust: 100%;
+        tab-size: 4;
+        font-family: var(--font-sans);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-size: inherit;
+        font-weight: inherit;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: inherit;
+    }
+
+    code,
+    kbd,
+    samp,
+    pre {
+        font-family: var(--font-mono);
+        font-size: 1em;
+    }
+
+    ol,
+    ul {
+        list-style: none;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+    button {
+        cursor: pointer;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+    }
 }
 
-html {
-    line-height: 1.5;
-    -webkit-text-size-adjust: 100%;
-    tab-size: 4;
-    font-family: var(--font-sans);
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-size: inherit;
-    font-weight: inherit;
-}
-
-a {
-    color: inherit;
-    text-decoration: inherit;
-}
-
-code,
-kbd,
-samp,
-pre {
-    font-family: var(--font-mono);
-    font-size: 1em;
-}
-
-ol,
-ul {
-    list-style: none;
-}
-
-img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-}
-
-button {
-    cursor: pointer;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-}
-
-/* Theme tokens */
+/* Theme tokens (unlayered on purpose — custom properties cascade by inheritance, not layer order) */
 :root {
     --font-sans:
         ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
