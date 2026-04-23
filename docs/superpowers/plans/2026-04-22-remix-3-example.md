@@ -142,12 +142,24 @@ import { defineConfig } from "vite-plus";
 import { remix } from "./remix.plugin.ts";
 
 export default defineConfig({
-    plugins: [contentLayer(), mdx({ jsxImportSource: "remix/component" }), remix()],
+    plugins: [
+        contentLayer(),
+        mdx({ jsxImportSource: "remix/component" }),
+        remix(),
+        {
+            name: "remix-enable-multi-env-build",
+            config() {
+                return { builder: {} };
+            },
+        },
+    ],
     css: { transformer: "lightningcss" },
 });
 ```
 
 Plugin order matters: `contentLayer` must come before `mdx` so the virtual MDX modules exist by the time `mdx()` transforms them.
+
+The `remix-enable-multi-env-build` inline plugin sets `config.builder = {}` so Vite instantiates all declared environments (`client` + `ssr`) at build time. Without it, `vp build` falls back to legacy single-environment mode, only the `client` env gets instantiated, and the remix plugin's `buildApp` hook throws `Cannot read properties of undefined (reading 'isBuilt')` when it tries to build the missing `ssr` env. Apps that use `@cloudflare/vite-plugin` don't need this shim because Cloudflare's plugin sets `config.builder` itself.
 
 - [ ] **Step 3: Verify typecheck**
 
@@ -1325,12 +1337,18 @@ Expected:
 - Console is clean.
 Stop the dev server.
 
-- [ ] **Step 4: Production build (expect upstream failure)**
+- [ ] **Step 4: Production build**
 
 Run: `cd examples/remix-3 && pnpm build && cd -`
-Expected as of 2026-04: **fails** with `TypeError: Cannot read properties of undefined (reading 'isBuilt')` at `builder.build` in the remix plugin's compat wrapper. This is an upstream Remix 3 + Vite+ integration issue — the same error reproduces in the canonical `/Users/orion/Developer/Templates/remix-3-templates/default/` template, so it is not something this example can fix. Skip build verification until upstream resolves. Do NOT modify `remix.plugin.ts` — it is a verbatim copy of the template's plugin and patching it here would drift from upstream.
+Expected: Exit 0. `examples/remix-3/dist/client/` and `examples/remix-3/dist/ssr/` both populated.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Run preview**
+
+Run: `cd examples/remix-3 && pnpm preview` (port 4173 by default).
+Expected: Home and post-detail pages both return 200 with rendered HTML matching the dev server's output. CopyCode button still works.
+Stop the preview server.
+
+- [ ] **Step 6: Commit**
 
 ```bash
 git add examples/remix-3/README.md
@@ -1344,5 +1362,6 @@ git commit -m "Add README for Remix 3 example"
 - All 14 tasks above complete with their commits.
 - `cd examples/remix-3 && pnpm typecheck` exits 0.
 - `cd examples/remix-3 && vp dev` starts cleanly; list → detail nav via Frame works; CopyCode hydration works; no full-page reload on nav.
-- `pnpm build` / `pnpm preview` currently fail due to an upstream Remix 3 plugin bug (see Step 4). Tracked separately in bd.
+- `pnpm build` exits 0 and produces both `dist/client/` and `dist/ssr/`.
+- `pnpm preview` serves the built output; home and a post page both return 200 with expected content.
 - The example's file tree matches §2 of the spec at `docs/superpowers/specs/2026-04-22-remix-3-example-design.md`.
