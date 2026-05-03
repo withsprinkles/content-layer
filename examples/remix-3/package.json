@@ -20,6 +20,7 @@
     "devDependencies": {
         "@types/node": "^25.5.0",
         "@typescript/native-preview": "latest",
+        "magic-string": "^0.30.21",
         "oxc-parser": "^0.121.0",
         "vite": "npm:@voidzero-dev/vite-plus-core@latest",
         "vite-plus": "latest"
