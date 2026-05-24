@@ -17,6 +17,24 @@ import { generateTypes } from "./codegen.ts";
 import { generateDigest } from "./digest.ts";
 import { createDataStore, createMetaStore } from "./store.ts";
 
+function formatIssuePath(
+    path: ReadonlyArray<PropertyKey | StandardSchemaV1.PathSegment> | undefined,
+): string {
+    if (!path || path.length === 0) return "";
+    let out = "";
+    for (let segment of path) {
+        let key = typeof segment === "object" && segment !== null ? segment.key : segment;
+        if (typeof key === "number") {
+            out += `[${key}]`;
+        } else if (typeof key === "string") {
+            out += out === "" ? key : `.${key}`;
+        } else {
+            out += `[${String(key)}]`;
+        }
+    }
+    return out;
+}
+
 function toJSLiteral(value: unknown): string {
     if (value === null || value === undefined) return String(value);
     if (typeof value === "boolean" || typeof value === "number") return String(value);
@@ -83,10 +101,12 @@ export function createContentLayerPlugin(options: InternalPluginOptions): Plugin
                 : (schema as StandardSchemaV1<unknown, unknown>);
             let result = await resolvedSchema["~standard"].validate(props.data);
             if ("issues" in result) {
-                let messages = (result.issues as { message: string }[])
-                    .map(i => i.message)
-                    .join(", ");
-                throw new Error(`Validation failed for entry "${props.id}": ${messages}`);
+                let issues = result.issues as ReadonlyArray<StandardSchemaV1.Issue>;
+                let lines = issues.map(issue => {
+                    let path = formatIssuePath(issue.path);
+                    return path ? `  - ${path}: ${issue.message}` : `  - ${issue.message}`;
+                });
+                throw new Error(`Validation failed for entry "${props.id}":\n${lines.join("\n")}`);
             }
             return result.value as Data;
         };
