@@ -7,7 +7,7 @@ import { createContentLayerPlugin } from "./plugin.ts";
 
 let adapter: FrameworkAdapter = {
     wrapContent: "let MdxComponent = mod.default; let Content = () => () => MdxComponent({});",
-    componentType: '() => () => import("remix/component").RemixNode',
+    componentType: '() => () => import("remix/ui").RemixNode',
 };
 
 export function contentLayer(options?: ContentLayerPluginOptions): Plugin {
