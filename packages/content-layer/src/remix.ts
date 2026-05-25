@@ -9,7 +9,7 @@ let adapter: FrameworkAdapter = {
     wrapContent:
         "let MdxComponent = mod.default; let Content = (handle) => () => MdxComponent(handle?.props ?? {});",
     componentType:
-        '(props?: { components?: Record<string, unknown>; [key: string]: unknown }) => () => import("remix/ui").RemixNode',
+        '(handle: import("remix/ui").Handle<{ components?: Record<string, unknown> }>) => () => import("remix/ui").RemixNode',
 };
 
 export function contentLayer(options?: ContentLayerPluginOptions): Plugin {
