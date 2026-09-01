@@ -1,4 +1,4 @@
-import { css } from "remix/component";
+import { css } from "remix/ui";
 
 export let htmlStyle = css({
     backgroundColor: "var(--color-white)",

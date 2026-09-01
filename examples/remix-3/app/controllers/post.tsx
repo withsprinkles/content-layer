@@ -1,4 +1,4 @@
-import type { Action } from "remix/fetch-router";
+import type { Action } from "remix/router";
 
 import { Document } from "#/components/Document.tsx";
 import { document, frame } from "#/lib/render.tsx";
@@ -48,4 +48,4 @@ export default (async ctx => {
             </div>
         </article>,
     );
-}) satisfies Action<"GET", "/blog/:slug">;
+}) satisfies Action<"/blog/:slug">;

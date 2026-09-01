@@ -234,7 +234,7 @@ As well as within MDX:
 
 The Remix adapter wraps MDX components in a factory pattern to match Remix's component conventions. The `Content` returned by `render()` has the type `() => () => RemixNode`.
 
-MDX must be configured with `jsxImportSource: "remix/component"`:
+MDX must be configured with `jsxImportSource: "remix/ui"`:
 
 ```ts
 // vite.config.ts
@@ -246,7 +246,7 @@ import { contentLayer } from "@withsprinkles/content-layer/remix";
 export default defineConfig({
     plugins: [
         contentLayer(),
-        mdx({ jsxImportSource: "remix/component" }),
+        mdx({ jsxImportSource: "remix/ui" }),
         // ... your other plugins (remix, etc.)
     ],
 });
@@ -287,10 +287,10 @@ export default {
 
 Both adapters require `@mdx-js/rollup` to be installed separately and added to your Vite config. The content layer plugin serves raw MDX as virtual modules; `@mdx-js/rollup` compiles them into components.
 
-| Framework | MDX Config                                    |
-| --------- | --------------------------------------------- |
-| React     | `mdx()`                                       |
-| Remix     | `mdx({ jsxImportSource: "remix/component" })` |
+| Framework | MDX Config                             |
+| --------- | -------------------------------------- |
+| React     | `mdx()`                                |
+| Remix     | `mdx({ jsxImportSource: "remix/ui" })` |
 
 The plugin order matters — `contentLayer()` must come before `mdx()` so that virtual MDX modules are available for compilation.
 

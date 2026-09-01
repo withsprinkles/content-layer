@@ -46,57 +46,76 @@ type SyncStandardSchema<Input, Output> = {
     };
 };
 
-export type ReferenceSchema<C extends string = string> = SyncStandardSchema<
-    string,
-    Reference<C>
-> & {
-    "~run": (value: unknown, context: RunContext) => StandardSchemaV1.Result<Reference<C>>;
-    /**
-     * Present for structural compatibility with `@remix-run/data-schema`'s
-     * `Schema` type. Calling it returns the same schema unchanged — reference
-     * IDs are strings, so additional checks belong on the outer combinator
-     * that consumes the resolved entry, not on this helper.
-     */
-    pipe: (
-        ...checks: Array<{ check: (v: Reference<C>) => boolean; message?: string }>
-    ) => ReferenceSchema<C>;
-    /** Same semantics as `pipe`: present for type compatibility; a no-op at runtime. */
-    refine: (predicate: (v: Reference<C>) => boolean, message?: string) => ReferenceSchema<C>;
+/** A reusable check, mirroring `@remix-run/data-schema`'s `Check` type. */
+type SchemaCheck<Output> = {
+    check: (value: Output) => boolean;
+    message?: string;
+    code?: string;
+    values?: Record<string, unknown>;
 };
 
-export function reference<C extends string>(collection: C): ReferenceSchema<C> {
-    function validate(value: unknown): StandardSchemaV1.Result<Reference<C>> {
-        if (typeof value !== "string") {
-            return { issues: [{ message: "Expected a string reference ID" }] };
-        }
-        return { value: { collection, id: value } };
-    }
+/**
+ * The chainable sync-schema surface `@remix-run/data-schema` requires of any
+ * schema handed to one of its combinators.
+ */
+type ChainableSchema<Input, Output> = SyncStandardSchema<Input, Output> & {
+    "~run": (value: unknown, context: RunContext) => StandardSchemaV1.Result<Output>;
+    /**
+     * Present for structural compatibility with `@remix-run/data-schema`'s
+     * `Schema` type. Calling it returns the same schema unchanged — these
+     * schemas validate a fixed shape, so additional checks belong on the outer
+     * combinator that consumes the resolved entry, not on this helper.
+     */
+    pipe: (...checks: SchemaCheck<Output>[]) => ChainableSchema<Input, Output>;
+    /** Same semantics as `pipe`: present for type compatibility; a no-op at runtime. */
+    refine: (
+        predicate: (value: Output) => boolean,
+        message?: string,
+    ) => ChainableSchema<Input, Output>;
+    /** Maps the validated output through `transformer`, as `@remix-run/data-schema` does. */
+    transform: <NewOutput>(
+        transformer: (value: Output) => NewOutput,
+    ) => ChainableSchema<Input, NewOutput>;
+};
 
-    let schema: ReferenceSchema<C> = {
+export type ReferenceSchema<C extends string = string> = ChainableSchema<string, Reference<C>>;
+
+function createChainableSchema<Output>(
+    run: (value: unknown, context: RunContext) => StandardSchemaV1.Result<Output>,
+): ChainableSchema<string, Output> {
+    let schema: ChainableSchema<string, Output> = {
         "~standard": {
             version: 1,
             vendor: "sprinkles",
-            validate,
+            validate: value => run(value, { path: [] }),
         },
-        "~run"(value, context) {
-            let result = validate(value);
-            if (result.issues) {
-                return {
-                    issues: result.issues.map(issue => {
-                        let path = issue.path ?? context.path;
-                        return path.length > 0 ? { ...issue, path } : issue;
-                    }),
-                };
-            }
-            return result;
-        },
+        "~run": run,
         pipe(..._checks) {
             return schema;
         },
         refine(_predicate, _message) {
             return schema;
         },
+        transform(transformer) {
+            return createChainableSchema((value, context) => {
+                let result = run(value, context);
+                if (result.issues) return result;
+                return { value: transformer(result.value) };
+            });
+        },
     };
 
     return schema;
+}
+
+export function reference<C extends string>(collection: C): ReferenceSchema<C> {
+    return createChainableSchema<Reference<C>>((value, context) => {
+        if (typeof value !== "string") {
+            let issue: StandardSchemaV1.Issue = { message: "Expected a string reference ID" };
+            return {
+                issues: [context.path.length > 0 ? { ...issue, path: context.path } : issue],
+            };
+        }
+        return { value: { collection, id: value } };
+    });
 }

@@ -35,7 +35,7 @@ pnpm preview     # serve the production build
 
 ## What to look at, in order
 
-1. [`vite.config.ts`](./vite.config.ts) — plugin registration. Note the order: `contentLayer()` → `mdx({ jsxImportSource: "remix/component" })` → `remix()`.
+1. [`vite.config.ts`](./vite.config.ts) — plugin registration. Note the order: `contentLayer()` → `mdx({ jsxImportSource: "remix/ui" })` → `remix()`.
 2. [`app/content.config.ts`](./app/content.config.ts) — defining two collections with `remix/data-schema`, including a `reference()`.
 3. [`app/components/Document.tsx`](./app/components/Document.tsx) — the HTML shell with a named `<Frame>` driving soft navigation.
 4. [`app/controllers/post.tsx`](./app/controllers/post.tsx) — querying an entry, resolving its author reference, and rendering MDX through Content Layer's Remix adapter.

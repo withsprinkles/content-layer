@@ -40,9 +40,9 @@ test("uses adapter componentType in render return type", () => {
     let output = generateTypes(
         { blog: { schema: null as never } },
         "../../app/content.config.ts",
-        '() => () => import("remix/component").RemixNode',
+        '() => () => import("remix/ui").RemixNode',
     );
-    expect(output).toContain('() => () => import("remix/component").RemixNode');
+    expect(output).toContain('() => () => import("remix/ui").RemixNode');
 });
 
 test("includes typed function signatures", () => {
