@@ -1,5 +1,5 @@
 import { codeBlockButtonStyle, codeBlockContainerStyle, codeBlockPreStyle } from "#/styles.ts";
-import { clientEntry, on } from "remix/ui";
+import { clientEntry, on } from "remix/component";
 
 export let CopyCode = clientEntry<{ lang?: string; children: string }>(import.meta.url, handle => {
     let copied = false;

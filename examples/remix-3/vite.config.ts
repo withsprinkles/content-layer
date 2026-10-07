@@ -5,7 +5,7 @@ import { defineConfig } from "vite-plus";
 import { remix } from "./remix.plugin.ts";
 
 export default defineConfig({
-    plugins: [contentLayer(), mdx({ jsxImportSource: "remix/ui" }), remix()],
+    plugins: [contentLayer(), mdx({ jsxImportSource: "remix/component" }), remix()],
     css: { transformer: "lightningcss" },
     builder: {},
 });
