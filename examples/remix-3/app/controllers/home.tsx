@@ -1,4 +1,4 @@
-import type { Action } from "remix/fetch-router";
+import type { Action } from "remix/router";
 
 import { Document } from "#/components/Document.tsx";
 import { document, frame } from "#/lib/render.tsx";
@@ -25,7 +25,7 @@ export default (async ctx => {
             <ul mix={postListStyle}>
                 {posts.map(post => (
                     <li key={post.id}>
-                        <a href={`/blog/${post.id}`} rmx-target="content" mix={postLinkStyle}>
+                        <a href={`/blog/${post.id}`} data-rmx-target="content" mix={postLinkStyle}>
                             <h2 mix={postTitleStyle}>{post.data.title}</h2>
                             <p mix={postSummaryStyle}>{post.data.summary}</p>
                             <time
@@ -45,4 +45,4 @@ export default (async ctx => {
             </ul>
         </main>,
     );
-}) satisfies Action<"GET", "/">;
+}) satisfies Action<"/">;

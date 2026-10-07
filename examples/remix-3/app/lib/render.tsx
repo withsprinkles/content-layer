@@ -1,8 +1,8 @@
 import type { RemixNode } from "remix/component";
 
 import { router } from "#/entry.server.tsx";
-import { getContext } from "remix/async-context-middleware";
 import { renderToStream } from "remix/component/server";
+import { getContext } from "remix/middleware/async-context";
 import { createHtmlResponse } from "remix/response/html";
 
 export function document(node: RemixNode): Response {

@@ -57,3 +57,24 @@ test("reference's ~run omits path when context.path is empty", () => {
         expect(result.issues[0].path).toBeUndefined();
     }
 });
+
+test("reference's transform maps the validated output", () => {
+    let schema = reference("authors").transform(ref => `${ref.collection}/${ref.id}`);
+    expect(schema["~run"]("mark", { path: [] })).toEqual({ value: "authors/mark" });
+    expect(schema["~standard"].validate("mark")).toEqual({ value: "authors/mark" });
+});
+
+test("reference's transform passes issues through without running the transformer", () => {
+    let calls = 0;
+    let schema = reference("authors").transform(ref => {
+        calls++;
+        return ref.id;
+    });
+    let result = schema["~run"](42, { path: ["posts", 0, "author"] });
+    expect(calls).toBe(0);
+    expect(result).toHaveProperty("issues");
+    if ("issues" in result && result.issues) {
+        expect(result.issues[0].message).toBe("Expected a string reference ID");
+        expect(result.issues[0].path).toEqual(["posts", 0, "author"]);
+    }
+});
